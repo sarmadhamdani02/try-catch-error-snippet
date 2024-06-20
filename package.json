@@ -19,6 +19,14 @@
         "command": "try-catch-error-snippet.tces",
         "title": "TCES"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "try-catch-error-snippet.tces",
+        "key": "ctrl+alt+t",
+        "mac": "cmd+alt+t",
+        "when": "editorTextFocus"
+      }
     ]
   },
   "scripts": {

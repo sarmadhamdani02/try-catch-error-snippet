@@ -1,36 +1,87 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-const vscode = require('vscode');
+const vscode = require("vscode");
+const path = require("path");
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-
-/**
- * @param {vscode.ExtensionContext} context
- */
 function activate(context) {
+  console.log('Your extension "findFunctionName" is now active!');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "try-catch-error-snippet" is now active!');
+  let disposable = vscode.commands.registerCommand(
+    "try-catch-error-snippet.tces",
+    function () {
+      const editor = vscode.window.activeTextEditor;
+      if (editor) {
+        const document = editor.document;
+        const position = editor.selection.active;
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('try-catch-error-snippet.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
+        const functionName = getEnclosingFunctionName(document, position);
+        editor.edit((editBuilder) => {
+          //   editBuilder.insert(position, functionName || "null");
+          editBuilder.insert(
+            position,
+            tryCatchCodeSnippet(
+              "JS",
+              functionName || null,
+              path.basename(document.fileName)
+            )
+          );
+        });
+      }
+    }
+  );
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Try Catch Error Snippet!');
-	});
-
-	context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
 function deactivate() {}
 
-module.exports = {
-	activate,
-	deactivate
+function tryCatchCodeSnippet(fileType = "JS", functionName, fileName) {
+  if (fileType === "JS") {
+    return functionName
+      ? `
+	try {
+   
+	} 	
+	catch (error) {
+    
+    console.error(${fileName}," :: ", ${functionName} ,"() :: Error ❌ : ", error);
+	
+	}
+
+		`
+      : `
+try {
+   
+} 
+catch (error) {
+    
+	console.error(${fileName}," :: Error ❌ : ", error);
+
+	}
+
+		`;
+  }
 }
+
+function getEnclosingFunctionName(document, position) {
+  const text = document.getText();
+  const functionRegex =
+    /function\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*\{[^]*?\}/g;
+  let match;
+  let functionName = null;
+
+  while ((match = functionRegex.exec(text)) !== null) {
+    const startPos = document.positionAt(match.index);
+    const endPos = document.positionAt(match.index + match[0].length);
+
+    if (position.isAfter(startPos) && position.isBefore(endPos)) {
+      functionName = match[1];
+      break;
+    }
+  }
+
+  return functionName;
+}
+
+module.exports = {
+  activate,
+  deactivate,
+};

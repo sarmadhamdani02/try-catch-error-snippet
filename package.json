@@ -9,13 +9,17 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:try-catch-error-snippet.tces"
+  ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
-      "command": "try-catch-error-snippet.helloWorld",
-      "title": "Hello World"
-    }]
+    "commands": [
+      {
+        "command": "try-catch-error-snippet.tces",
+        "title": "TCES"
+      }
+    ]
   },
   "scripts": {
     "lint": "eslint .",

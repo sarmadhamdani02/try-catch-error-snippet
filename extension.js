@@ -14,7 +14,7 @@ function activate(context) {
 
         const fileName = path.basename(document.fileName);
 		const fileExtension = getFileExtension(fileName);
-        const functionName = getEnclosingFunctionName(document, position, fileExtension);
+        const functionName = getEnclosingFunctionName(document, position);
 
         // Insert the try-catch snippet
         editor
@@ -390,79 +390,27 @@ function getFileExtension(fileName) {
 }
 
 
-function getEnclosingFunctionName(document, position, fileExtension) {
-    const text = document.getText();
-    let functionRegex;
+function getEnclosingFunctionName(document, position) {
+	const text = document.getText();
+	const functionRegex =
+	  /function\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*\{[^]*?\}/g;
+	let match;
+	let functionName = null;
+  
+	while ((match = functionRegex.exec(text)) !== null) {
+	  const startPos = document.positionAt(match.index);
+	  const endPos = document.positionAt(match.index + match[0].length);
+  
+	  if (position.isAfter(startPos) && position.isBefore(endPos)) {
+		functionName = match[1];
+		break;
+	  }
+	}
+  
+	return functionName;
+  }
 
-    if (!fileExtension) {
-        return null; // Return null if fileExtension is not provided or falsy
-    }
 
-    fileExtension = fileExtension.toLowerCase();
-
-    switch (fileExtension) {
-        case 'js':
-        case 'ts':
-        case 'jsx':
-        case 'tsx':
-            functionRegex = /function\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*\{[^]*?\}/g;
-            break;
-        case 'py':
-            functionRegex = /def\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*:/g;
-            break;
-        case 'java':
-            functionRegex = /(?:public|protected|private|static|\s) +[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\) *(\{?|[^;])/g;
-            break;
-        case 'c':
-        case 'cpp':
-            functionRegex = /(?:[\w\s*]+)\s+(\w+)\s*\([^)]*\)\s*{/g;
-            break;
-        case 'php':
-            functionRegex = /function\s+([a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)\s*\([^)]*\)\s*{/g;
-            break;
-        case 'rb':
-            functionRegex = /def\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*/g;
-            break;
-        case 'swift':
-            functionRegex = /func\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*(->\s*\w+\s*)?\{/g;
-            break;
-        case 'cs':
-            functionRegex = /(?:public|private|protected|internal|static)\s+(?:async\s+)?(?:\w+\s+)?(\w+)\s*\([^)]*\)\s*{/g;
-            break;
-        case 'go':
-            functionRegex = /func\s+\(\s*[a-zA-Z_$][0-9a-zA-Z_$]*\s*\w*\s*\)\s+(\w+)\s*\([^)]*\)\s*{/g;
-            break;
-        case 'lua':
-            functionRegex = /function\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*{/g;
-            break;
-        case 'perl':
-            functionRegex = /sub\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*{/g;
-            break;
-        // Add more cases as needed for other languages
-        default:
-            functionRegex = null;
-            break;
-    }
-
-    if (!functionRegex) {
-        return null; // Return null if no matching regex pattern found
-    }
-
-    let match;
-    let functionName = null;
-
-    while ((match = functionRegex.exec(text)) !== null) {
-        const startPos = document.positionAt(match.index);
-        const endPos = document.positionAt(match.index + match[0].length);
-
-        if (position.isAfterOrEqual(startPos) && position.isBeforeOrEqual(endPos)) {
-            functionName = match[1];
-            break;
-        }
-    }
-
-    return functionName;
-}
 
 
 

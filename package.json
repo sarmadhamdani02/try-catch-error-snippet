@@ -10,7 +10,7 @@
   "categories": [
     "Other"
   ],
-  "icon": "Icon/TCES Icon.png",
+  "icon": "Icon/TCES_Icon.png",
   "activationEvents": [
     "onCommand:try-catch-error-snippet.tces"
   ],

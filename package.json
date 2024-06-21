@@ -1,8 +1,8 @@
 {
   "name": "try-catch-error-snippet",
   "displayName": "Try Catch Error Snippet",
-  "publisher": "sarmad_hamdani",
-  "description": "",
+  "publisher": "ShahSarmadHamdani",
+  "description": "A VS Code extension that simplifies error handling by auto-generating try-catch blocks with contextual error messages.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.90.0"
@@ -10,6 +10,7 @@
   "categories": [
     "Other"
   ],
+  "icon": "Icon\\TCES Icon.png",
   "activationEvents": [
     "onCommand:try-catch-error-snippet.tces"
   ],

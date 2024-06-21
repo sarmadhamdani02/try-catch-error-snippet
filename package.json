@@ -3,7 +3,7 @@
   "displayName": "Try Catch Error Snippet",
   "publisher": "ShahSarmadHamdani",
   "description": "A VS Code extension that simplifies error handling by auto-generating try-catch blocks with contextual error messages.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.90.0"
   },

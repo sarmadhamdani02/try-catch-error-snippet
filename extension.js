@@ -40,11 +40,11 @@ function tryCatchCodeSnippet(fileExtension, functionName, fileName) {
     const snippets = {
         "js": functionName
             ? `
-try {
-    // Your code here
-} catch (error) {
-    console.error("${fileName}", " :: ${functionName}() :: Error ❌ : ", error);
-}
+    try {
+        // Your code here
+    } catch (error) {
+        console.error("${fileName}", " :: ${functionName}() :: Error ❌ : ", error);
+    }
 `
             : `
 try {

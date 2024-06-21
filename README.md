@@ -1,65 +1,52 @@
-# try-catch-error-snippet README
 
-This is the README for your extension "try-catch-error-snippet". After writing up a brief description, we recommend including the following sections.
+# Try-Catch Error Snippet Extension
 
-## Features
+ ## Overview
+Writing effective try-catch error messages in large projects is sometimes very important but sometimes it becomes hard to write proper error messages in the catch field. Our VS Code extension simplifies this process significantly. It not only streamlines the creation of try-catch blocks but also automatically incorporates the current file name and parent function into the error message. This feature ensures that developers can quickly pinpoint which file and function encountered an issue, facilitating smoother debugging in complex codebases.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
 
-For example if there is an image subfolder under your extension project workspace:
 
-\!\[feature X\]\(images/feature-x.png\)
+## Key Features
+- Automatic Context Detection: 
+Automatically identifies the current file name and attempts to detect the parent function where the error occurs.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- Improved Error Messages: 
+Formats error messages to include "FileName.js" or "FileName.ts", and "FunctionName()" (if available), alongside detailed error information.
 
-## Requirements
+- Effortless Integration: 
+Insert try-catch blocks quickly using the command palette (Ctrl+Shift+P) or directly with the shortcut Ctrl+Alt+T (for windows) or cmd+Alt+t (for Mac).
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Quick Start
 
-## Extension Settings
+-  #### Installation:
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Install the extension from the Visual Studio Code Marketplace or search for "Try-Catch Error Snippet" in the Extensions view (Ctrl+Shift+X).
 
-For example:
+-  #### Inserting a Try-Catch Block:
 
-This extension contributes the following settings:
+Place your cursor within the function where you want to handle errors.
+Use the command palette (Ctrl+Shift+P) and type "Try-Catch Error Snippet" to insert the snippet.
+Alternatively, use the shortcut Ctrl+Alt+T to directly insert the try-catch block.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- #### Snippet Format:
 
-## Known Issues
+The inserted try-catch block follows this format:
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+```
+ try {
+    // Your JavaScript or TypeScript code here
+} catch (error) {
+    console.error("FileName.js", " :: FunctionName() :: Error ❌ : ", error);
+}
+```
 
-## Release Notes
+Replace "FileName.js" or "FileName.ts" dynamically with your actual file name.
+"FunctionName()" dynamically represents the name of the function where the try-catch block is inserted, providing crucial context in the error message.
+The error details are displayed in the console for quick reference.
 
-Users appreciate release notes as you update your extension.
+### Known Issues and Future Updates
+- The extension currently fully supports JavaScript (.js) and TypeScript (.ts) files for generating try-catch error snippets. For other languages like Java, Python, C, C++, and more, the extension provides basic support for try-catch snippets but does not yet detect parent functions. 
 
-### 1.0.0
+- It does not manage indentation automatically, which may impact snippet formatting. Future updates will include improved language support with automatic detection of parent functions. In the meantime, we recommend using a file formatter for optimal snippet performance.
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- There can be some other bugs too, which will be solved in the next couple of updates. Your feedback will be really impotrant. :)

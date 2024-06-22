@@ -32,7 +32,8 @@ Alternatively, use the shortcut Ctrl+Alt+T to directly insert the try-catch bloc
 
 The inserted try-catch block follows this format:
 
-![Snippet format 📷](media\mediaFiles\ReadmeMedia\snippetFormat.png)
+![Snippet format 📷](media/mediaFiles/ReadmeMedia/snippetFormat.png)
+
 
 Replace "FileName.js" or "FileName.ts" dynamically with your actual file name.
 "FunctionName()" dynamically represents the name of the function where the try-catch block is inserted, providing crucial context in the error message.

@@ -34,12 +34,6 @@ The inserted try-catch block follows this format:
 - **FunctionName()** dynamically represents the name of the function where the try-catch block is inserted, providing crucial context in the error message.
 - Error details are displayed in the console for quick reference.
 
-### Example
-
-![Snippet format](media/mediaFiles/ReadmeMedia/VSCodeExtension-ezgif.com-video-to-gif-converter.gif)
-
-
-
 
 ## Language Support
 

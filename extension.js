@@ -1,7 +1,6 @@
 const path = require("path");
 const vscode = require("vscode");
 
-
 function activate(context) {
   console.log('Your extension "try-catch-error-snippet" is now active!');
 
@@ -15,14 +14,14 @@ function activate(context) {
 
         const functionName = getEnclosingFunctionName(document, position);
         const fileName = path.basename(document.fileName);
-		const fileExtension = getFileExtension(fileName);
+        const fileExtension = getFileExtension(fileName);
 
         // Insert the try-catch snippet
         editor
           .edit((editBuilder) => {
             editBuilder.insert(
               position,
-              tryCatchCodeSnippet(fileExtension, functionName || null, fileName)
+              tryCatchCodeSnippet(fileExtension, functionName || null, fileName, position)
             );
           })
           .then(() => {
@@ -38,385 +37,292 @@ function activate(context) {
 
 function deactivate() {}
 
-function tryCatchCodeSnippet(fileExtension = "js", functionName, fileName) {
-    const snippets = {
-        "js": functionName
-            ? `
-try {
-    // Your code here
-} catch (error) {
-    console.error("${fileName}", " :: ${functionName}() :: Error ❌ : ", error);
-}
+function tryCatchCodeSnippet(fileExtension = "js", functionName, fileName, position) {
+  const indent = " ".repeat(position.character);
+  const snippets = {
+    "js": functionName
+      ? `
+${indent}try {
+${indent}} catch (error) {
+${indent}    console.error("${fileName}", " :: ${functionName}() :: Error ❌ : ", error);
+${indent}}
 `
-            : `
-try {
-    // Your code here
-} catch (error) {
-    console.error("${fileName}", " :: Error ❌ : ", error);
-}
+      : `
+${indent}try {
+${indent}} catch (error) {
+${indent}    console.error("${fileName}", " :: Error ❌ : ", error);
+${indent}}
 `,
-        "java": functionName
-            ? `
-try {
-    // Your code here
-} catch (Exception e) {
-    System.err.println("${fileName}" + " :: ${functionName}() :: Error ❌ : " + e);
-}
+    "java": functionName
+      ? `
+${indent}try {
+${indent}} catch (Exception e) {
+${indent}    System.err.println("${fileName}" + " :: ${functionName}() :: Error ❌ : " + e);
+${indent}}
 `
-            : `
-try {
-    // Your code here
-} catch (Exception e) {
-    System.err.println("${fileName}" + " :: Error ❌ : " + e);
-}
+      : `
+${indent}try {
+${indent}} catch (Exception e) {
+${indent}    System.err.println("${fileName}" + " :: Error ❌ : " + e);
+${indent}}
 `,
-        "cpp": functionName
-            ? `
-try {
-    // Your code here
-} catch (const std::exception& e) {
-    std::cerr << "${fileName}" << " :: ${functionName}() :: Error ❌ : " << e.what() << std::endl;
-}
+    "cpp": functionName
+      ? `
+${indent}try {
+${indent}} catch (const std::exception& e) {
+${indent}    std::cerr << "${fileName}" << " :: ${functionName}() :: Error ❌ : " << e.what() << std::endl;
+${indent}}
 `
-            : `
-try {
-    // Your code here
-} catch (const std::exception& e) {
-    std::cerr << "${fileName}" << " :: Error ❌ : " << e.what() << std::endl;
-}
+      : `
+${indent}try {
+${indent}} catch (const std::exception& e) {
+${indent}    std::cerr << "${fileName}" << " :: Error ❌ : " << e.what() << std::endl;
+${indent}}
 `,
-        "py": functionName
-            ? `
-try:
-    # Your code here
-except Exception as e:
-    print("${fileName}", " :: ${functionName}() :: Error ❌ : ", e)
+    "py": functionName
+      ? `
+${indent}try:
+${indent}    pass
+${indent}except Exception as e:
+${indent}    print("${fileName}", " :: ${functionName}() :: Error ❌ : ", e)
 `
-            : `
-try:
-    # Your code here
-except Exception as e:
-    print("${fileName}", " :: Error ❌ : ", e)
+      : `
+${indent}try:
+${indent}    pass
+${indent}except Exception as e:
+${indent}    print("${fileName}", " :: Error ❌ : ", e)
 `,
-        "cs": functionName
-            ? `
-try
-{
-    // Your code here
-}
-catch (Exception ex)
-{
-    Console.WriteLine("${fileName}" + " :: ${functionName}() :: Error ❌ : " + ex.Message);
-}
+    "cs": functionName
+      ? `
+${indent}try
+${indent}{
+${indent}}
+${indent}catch (Exception ex)
+${indent}{
+${indent}    Console.WriteLine("${fileName}" + " :: ${functionName}() :: Error ❌ : " + ex.Message);
+${indent}}
 `
-            : `
-try
-{
-    // Your code here
-}
-catch (Exception ex)
-{
-    Console.WriteLine("${fileName}" + " :: Error ❌ : " + ex.Message);
-}
+      : `
+${indent}try
+${indent}{
+${indent}}
+${indent}catch (Exception ex)
+${indent}{
+${indent}    Console.WriteLine("${fileName}" + " :: Error ❌ : " + ex.Message);
+${indent}}
 `,
-        "rb": functionName
-            ? `
-begin
-    # Your code here
-rescue => e
-    puts "${fileName}" + " :: ${functionName}() :: Error ❌ : " + e.to_s
-end
+    "rb": functionName
+      ? `
+${indent}begin
+${indent}rescue => e
+${indent}    puts "${fileName}" + " :: ${functionName}() :: Error ❌ : " + e.to_s
+${indent}end
 `
-            : `
-begin
-    # Your code here
-rescue => e
-    puts "${fileName}" + " :: Error ❌ : " + e.to_s
-end
+      : `
+${indent}begin
+${indent}rescue => e
+${indent}    puts "${fileName}" + " :: Error ❌ : " + e.to_s
+${indent}end
 `,
-        "php": functionName
-            ? `
-try {
-    // Your code here
-} catch (Exception $e) {
-    echo "${fileName}" . " :: ${functionName}() :: Error ❌ : " . $e->getMessage();
-}
+    "php": functionName
+      ? `
+${indent}try {
+${indent}} catch (Exception $e) {
+${indent}    echo "${fileName}" . " :: ${functionName}() :: Error ❌ : " . $e->getMessage();
+${indent}}
 `
-            : `
-try {
-    // Your code here
-} catch (Exception $e) {
-    echo "${fileName}" . " :: Error ❌ : " . $e->getMessage();
-}
+      : `
+${indent}try {
+${indent}} catch (Exception $e) {
+${indent}    echo "${fileName}" . " :: Error ❌ : " . $e->getMessage();
+${indent}}
 `,
-        "swift": functionName
-            ? `
-do {
-    // Your code here
-} catch {
-    print("${fileName}", " :: ${functionName}() :: Error ❌ : ", error)
-}
+    "swift": functionName
+      ? `
+${indent}do {
+${indent}} catch {
+${indent}    print("${fileName}", " :: ${functionName}() :: Error ❌ : ", error)
+${indent}}
 `
-            : `
-do {
-    // Your code here
-} catch {
-    print("${fileName}", " :: Error ❌ : ", error)
-}
+      : `
+${indent}do {
+${indent}} catch {
+${indent}    print("${fileName}", " :: Error ❌ : ", error)
+${indent}}
 `,
-        "kt": functionName
-            ? `
-try {
-    // Your code here
-} catch (e: Exception) {
-    println("${fileName}" + " :: ${functionName}() :: Error ❌ : " + e.message)
-}
+    "kt": functionName
+      ? `
+${indent}try {
+${indent}} catch (e: Exception) {
+${indent}    println("${fileName}" + " :: ${functionName}() :: Error ❌ : " + e.message)
+${indent}}
 `
-            : `
-try {
-    // Your code here
-} catch (e: Exception) {
-    println("${fileName}" + " :: Error ❌ : " + e.message)
-}
+      : `
+${indent}try {
+${indent}} catch (e: Exception) {
+${indent}    println("${fileName}" + " :: Error ❌ : " + e.message)
+${indent}}
 `,
-        "rs": functionName
-            ? `
-// Your code here
-match result {
-    Ok(val) => val,
-    Err(e) => {
-        eprintln!("${fileName}" + " :: ${functionName}() :: Error ❌ : {}", e);
-        // Handle error
-    }
-}
+    "rs": functionName
+      ? `
+${indent}// Your code here
+${indent}match result {
+${indent}    Ok(val) => val,
+${indent}    Err(e) => {
+${indent}        eprintln!("${fileName}" + " :: ${functionName}() :: Error ❌ : {}", e);
+${indent}        // Handle error
+${indent}    }
+${indent}}
 `
-            : `
-// Your code here
-match result {
-    Ok(val) => val,
-    Err(e) => {
-        eprintln!("${fileName}" + " :: Error ❌ : {}", e);
-        // Handle error
-    }
-}
+      : `
+${indent}// Your code here
+${indent}match result {
+${indent}    Ok(val) => val,
+${indent}    Err(e) => {
+${indent}        eprintln!("${fileName}" + " :: Error ❌ : {}", e);
+${indent}        // Handle error
+${indent}    }
+${indent}}
 `,
-        "go": functionName
-            ? `
-// Your code here
-func ${functionName}() {
-    defer func() {
-        if r := recover(); r != nil {
-            fmt.Println("${fileName}", " :: ${functionName}() :: Error ❌ : ", r)
-        }
-    }()
-}
+    "go": functionName
+      ? `
+${indent}// Your code here
+${indent}func ${functionName}() {
+${indent}    defer func() {
+${indent}        if r := recover(); r != nil {
+${indent}            fmt.Println("${fileName}", " :: ${functionName}() :: Error ❌ : ", r)
+${indent}        }
+${indent}    }()
+${indent}}
 `
-            : `
-// Your code here
-func ${functionName}() {
-    defer func() {
-        if r := recover(); r != nil {
-            fmt.Println("${fileName}", " :: Error ❌ : ", r)
-        }
-    }()
-}
+      : `
+${indent}// Your code here
+${indent}func ${functionName}() {
+${indent}    defer func() {
+${indent}        if r := recover(); r != nil {
+${indent}            fmt.Println("${fileName}", " :: Error ❌ : ", r)
+${indent}        }
+${indent}    }()
+${indent}}
 `,
-        "scala": functionName
-            ? `
-try {
-    // Your code here
-} catch {
-    case e: Exception =>
-        println("${fileName}" + " :: ${functionName}() :: Error ❌ : " + e.getMessage)
-}
+    "scala": functionName
+      ? `
+${indent}try {
+${indent}} catch {
+${indent}    case e: Exception =>
+${indent}        println("${fileName}" + " :: ${functionName}() :: Error ❌ : " + e.getMessage)
+${indent}}
 `
-            : `
-try {
-    // Your code here
-} catch {
-    case e: Exception =>
-        println("${fileName}" + " :: Error ❌ : " + e.getMessage)
-}
+      : `
+${indent}try {
+${indent}} catch {
+${indent}    case e: Exception =>
+${indent}        println("${fileName}" + " :: Error ❌ : " + e.getMessage)
+${indent}}
 `,
-        "pl": functionName
-            ? `
-eval {
-    # Your code here
-    1;
-} or do {
-    my $e = $@;
-    print "${fileName}" + " :: ${functionName}() :: Error ❌ : $e\n";
-};
+    "pl": functionName
+      ? `
+${indent}eval {
+${indent}    1;
+${indent}} or do {
+${indent}    my $e = $@;
+${indent}    print "${fileName}" + " :: ${functionName}() :: Error ❌ : $e\n";
+${indent}};
 `
-            : `
-eval {
-    # Your code here
-    1;
-} or do {
-    my $e = $@;
-    print "${fileName}" + " :: Error ❌ : $e\n";
-};
+      : `
+${indent}eval {
+${indent}    1;
+${indent}} or do {
+${indent}    my $e = $@;
+${indent}    print "${fileName}" + " :: Error ❌ : $e\n";
+${indent}};
 `,
-        "m": functionName
-            ? `
-@try {
-    // Your code here
-} @catch (NSException *exception) {
-    NSLog(@"${fileName}" + " :: ${functionName}() :: Error ❌ : %@", exception.reason);
-}
+    "m": functionName
+      ? `
+${indent}@try {
+${indent}} @catch (NSException *exception) {
+${indent}    NSLog(@"${fileName}" + " :: ${functionName}() :: Error ❌ : %@", exception.reason);
+${indent}}
 `
-            : `
-@try {
-    // Your code here
-} @catch (NSException *exception) {
-    NSLog(@"${fileName}" + " :: Error ❌ : %@", exception.reason);
-}
+      : `
+${indent}@try {
+${indent}} @catch (NSException *exception) {
+${indent}    NSLog(@"${fileName}" + " :: Error ❌ : %@", exception.reason);
+${indent}}
 `,
-        "hs": functionName
-            ? `
--- Your code here
-${functionName} :: IO ()
-${functionName} = catch
-    (do
-        -- Your code here
-    )
-    (\\(e :: SomeException) ->
-        putStrLn ("${fileName}" ++ " :: ${functionName}() :: Error ❌ : " ++ show e)
-    )
+    "hs": functionName
+      ? `
+${indent}-- Your code here
+${indent}${functionName} :: IO ()
+${indent}${functionName} = catch
+${indent}    (do
+${indent}    )
+${indent}    (\\(e :: SomeException) ->
+${indent}        putStrLn ("${fileName}" ++ " :: ${functionName}() :: Error ❌ : " ++ show e)
+${indent}    )
 `
-            : `
--- Your code here
-${functionName} :: IO ()
-${functionName} = catch
-    (do
-        -- Your code here
-    )
-    (\\(e :: SomeException) ->
-        putStrLn ("${fileName}" ++ " :: Error ❌ : " ++ show e)
-    )
+      : `
+${indent}-- Your code here
+${indent}${functionName} :: IO ()
+${indent}${functionName} = catch
+${indent}    (do
+${indent}    )
+${indent}    (\\(e :: SomeException) ->
+${indent}        putStrLn ("${fileName}" ++ " :: Error ❌ : " ++ show e)
+${indent}    )
 `,
-        "lua": functionName
-            ? `
--- Your code here
-local success, result = pcall(function()
-    -- Your code here
-end)
-if not success then
-    print("${fileName}" .. " :: ${functionName}() :: Error ❌ : " .. result)
-end
+    "lua": functionName
+      ? `
+${indent}local status, err = pcall(functionName)
+${indent}if not status then
+${indent}    print("${fileName}" .. " :: ${functionName}() :: Error ❌ : " .. err)
+${indent}end
 `
-            : `
--- Your code here
-local success, result = pcall(function()
-    -- Your code here
-end)
-if not success then
-    print("${fileName}" .. " :: Error ❌ : " .. result)
-end
+      : `
+${indent}local status, err = pcall(functionName)
+${indent}if not status then
+${indent}    print("${fileName}" .. " :: Error ❌ : " .. err)
+${indent}end
 `,
-        "dart": functionName
-            ? `
-try {
-    // Your code here
-} catch (e) {
-    print("${fileName}" + " :: ${functionName}() :: Error ❌ : " + e.toString());
-}
+    "elixir": functionName
+      ? `
+${indent}try do
+${indent}rescue
+${indent}    e -> IO.puts("${fileName} :: ${functionName}() :: Error ❌ : \#{inspect(e)}")
+${indent}end
 `
-            : `
-try {
-    // Your code here
-} catch (e) {
-    print("${fileName}" + " :: Error ❌ : " + e.toString());
-}
-`,
-        "erl": functionName
-            ? `
-% Your code here
-${functionName}() ->
-    try
-        % Your code here
-    catch
-        error:Error ->
-            io:format("${fileName}" + " :: ${functionName}() :: Error ❌ : ~p~n", [Error])
-    end.
+      : `
+${indent}try do
+${indent}rescue
+${indent}    e -> IO.puts("${fileName} :: Error ❌ : \#{inspect(e)}")
+${indent}end
 `
-            : `
-% Your code here
-${functionName}() ->
-    try
-        % Your code here
-    catch
-        error:Error ->
-            io:format("${fileName}" + " :: Error ❌ : ~p~n", [Error])
-    end.
-`,
-        "groovy": functionName
-            ? `
-try {
-    // Your code here
-} catch (Exception e) {
-    println("${fileName}" + " :: ${functionName}() :: Error ❌ : " + e.getMessage());
+  };
+  return snippets[fileExtension] || snippets["js"];
 }
-`
-            : `
-try {
-    // Your code here
-} catch (Exception e) {
-    println("${fileName}" + " :: Error ❌ : " + e.getMessage());
-}
-`,
-        "vb": functionName
-            ? `
-Try
-    ' Your code here
-Catch ex As Exception
-    Console.WriteLine("${fileName}" + " :: ${functionName}() :: Error ❌ : " & ex.Message)
-End Try
-`
-            : `
-Try
-    ' Your code here
-Catch ex As Exception
-    Console.WriteLine("${fileName}" + " :: Error ❌ : " & ex.Message)
-End Try
-`
-    };
-
-    return snippets[fileExtension.toLowerCase()] || '';
-}
-
-function getFileExtension(fileName) {
-	const extWithDot = path.extname(fileName).toLowerCase();
-    return extWithDot.slice(1); 
-}
-
 
 function getEnclosingFunctionName(document, position) {
   const text = document.getText();
-  const functionRegex =
-    /function\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\([^)]*\)\s*\{[^]*?\}/g;
-  let match;
-  let functionName = null;
+  const lines = text.split("\n");
 
-  while ((match = functionRegex.exec(text)) !== null) {
-    const startPos = document.positionAt(match.index);
-    const endPos = document.positionAt(match.index + match[0].length);
+  for (let i = position.line; i >= 0; i--) {
+    const line = lines[i].trim();
+    const functionNameMatch = /(?:function|def|fun|fn)\s+([a-zA-Z0-9_]+)/.exec(line);
 
-    if (position.isAfterOrEqual(startPos) && position.isBeforeOrEqual(endPos)) {
-      functionName = match[1];
-      break;
+    if (functionNameMatch) {
+      return functionNameMatch[1];
     }
   }
 
-  return functionName;
+  return null;
 }
 
-function moveCursorToTryBlock(editor, position) {
-  // Define the line where the try block starts (adjust as needed)
-  const tryBlockStartLine = position.line + 2;
+function getFileExtension(fileName) {
+  return fileName.split(".").pop().toLowerCase();
+}
 
-  // Move cursor to the beginning of the try block
-  const newPosition = new vscode.Position(tryBlockStartLine, 4); // Assuming indentation of 4 spaces
+function moveCursorToTryBlock(editor, originalPosition) {
+  const newPosition = new vscode.Position(originalPosition.line + 1, originalPosition.character + 5);
   editor.selection = new vscode.Selection(newPosition, newPosition);
 }
 

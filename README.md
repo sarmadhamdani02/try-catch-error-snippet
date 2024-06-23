@@ -61,7 +61,7 @@ We welcome contributions to improve the extension! Here's how you can get starte
 
 1. **Clone the Repository:**
 
-```
+```sh
 git clone <repository-url>
 cd try-catch-error-snippet
 
@@ -71,7 +71,7 @@ cd try-catch-error-snippet
 2. **Install `vsce` (Visual Studio Code Extension Manager):**
 If you haven't already, install `vsce` globally to package and publish extensions.
 
-```
+```sh
 git clone <repository-url>
 cd try-catch-error-snippet
 

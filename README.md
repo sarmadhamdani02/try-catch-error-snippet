@@ -36,10 +36,8 @@ The inserted try-catch block follows this format:
 
 ### Example
 
-<video width="600" autoplay loop muted playsinline>
-  <source src="media/mediaFiles/ReadmeMedia/VSCodeExtension.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+![Snippet format](media/mediaFiles/ReadmeMedia/VSCodeExtension-ezgif.com-video-to-gif-converter.gif)
+
 
 
 

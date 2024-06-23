@@ -53,6 +53,45 @@ ${indent}} catch (error) {
 ${indent}    console.error("${fileName}", " :: Error ❌ : ", error);
 ${indent}}
 `,
+    "jsx": functionName
+      ? `
+${indent}try {
+${indent}} catch (error) {
+${indent}    console.error("${fileName}", " :: ${functionName}() :: Error ❌ : ", error);
+${indent}}
+`
+      : `
+${indent}try {
+${indent}} catch (error) {
+${indent}    console.error("${fileName}", " :: Error ❌ : ", error);
+${indent}}
+`,
+    "ts": functionName
+      ? `
+${indent}try {
+${indent}} catch (error) {
+${indent}    console.error("${fileName}", " :: ${functionName}() :: Error ❌ : ", error);
+${indent}}
+`
+      : `
+${indent}try {
+${indent}} catch (error) {
+${indent}    console.error("${fileName}", " :: Error ❌ : ", error);
+${indent}}
+`,
+    "tsx": functionName
+      ? `
+${indent}try {
+${indent}} catch (error) {
+${indent}    console.error("${fileName}", " :: ${functionName}() :: Error ❌ : ", error);
+${indent}}
+`
+      : `
+${indent}try {
+${indent}} catch (error) {
+${indent}    console.error("${fileName}", " :: Error ❌ : ", error);
+${indent}}
+`,
     "java": functionName
       ? `
 ${indent}try {
@@ -67,6 +106,19 @@ ${indent}    System.err.println("${fileName}" + " :: Error ❌ : " + e);
 ${indent}}
 `,
     "cpp": functionName
+      ? `
+${indent}try {
+${indent}} catch (const std::exception& e) {
+${indent}    std::cerr << "${fileName}" << " :: ${functionName}() :: Error ❌ : " << e.what() << std::endl;
+${indent}}
+`
+      : `
+${indent}try {
+${indent}} catch (const std::exception& e) {
+${indent}    std::cerr << "${fileName}" << " :: Error ❌ : " << e.what() << std::endl;
+${indent}}
+`,
+    "c": functionName
       ? `
 ${indent}try {
 ${indent}} catch (const std::exception& e) {
@@ -219,111 +271,33 @@ ${indent}} catch {
 ${indent}    case e: Exception =>
 ${indent}        println("${fileName}" + " :: Error ❌ : " + e.getMessage)
 ${indent}}
-`,
-    "pl": functionName
-      ? `
-${indent}eval {
-${indent}    1;
-${indent}} or do {
-${indent}    my $e = $@;
-${indent}    print "${fileName}" + " :: ${functionName}() :: Error ❌ : $e\n";
-${indent}};
-`
-      : `
-${indent}eval {
-${indent}    1;
-${indent}} or do {
-${indent}    my $e = $@;
-${indent}    print "${fileName}" + " :: Error ❌ : $e\n";
-${indent}};
-`,
-    "m": functionName
-      ? `
-${indent}@try {
-${indent}} @catch (NSException *exception) {
-${indent}    NSLog(@"${fileName}" + " :: ${functionName}() :: Error ❌ : %@", exception.reason);
-${indent}}
-`
-      : `
-${indent}@try {
-${indent}} @catch (NSException *exception) {
-${indent}    NSLog(@"${fileName}" + " :: Error ❌ : %@", exception.reason);
-${indent}}
-`,
-    "hs": functionName
-      ? `
-${indent}-- Your code here
-${indent}${functionName} :: IO ()
-${indent}${functionName} = catch
-${indent}    (do
-${indent}    )
-${indent}    (\\(e :: SomeException) ->
-${indent}        putStrLn ("${fileName}" ++ " :: ${functionName}() :: Error ❌ : " ++ show e)
-${indent}    )
-`
-      : `
-${indent}-- Your code here
-${indent}${functionName} :: IO ()
-${indent}${functionName} = catch
-${indent}    (do
-${indent}    )
-${indent}    (\\(e :: SomeException) ->
-${indent}        putStrLn ("${fileName}" ++ " :: Error ❌ : " ++ show e)
-${indent}    )
-`,
-    "lua": functionName
-      ? `
-${indent}local status, err = pcall(functionName)
-${indent}if not status then
-${indent}    print("${fileName}" .. " :: ${functionName}() :: Error ❌ : " .. err)
-${indent}end
-`
-      : `
-${indent}local status, err = pcall(functionName)
-${indent}if not status then
-${indent}    print("${fileName}" .. " :: Error ❌ : " .. err)
-${indent}end
-`,
-    "elixir": functionName
-      ? `
-${indent}try do
-${indent}rescue
-${indent}    e -> IO.puts("${fileName} :: ${functionName}() :: Error ❌ : \#{inspect(e)}")
-${indent}end
-`
-      : `
-${indent}try do
-${indent}rescue
-${indent}    e -> IO.puts("${fileName} :: Error ❌ : \#{inspect(e)}")
-${indent}end
 `
   };
+
   return snippets[fileExtension] || snippets["js"];
 }
 
 function getEnclosingFunctionName(document, position) {
-  const text = document.getText();
-  const lines = text.split("\n");
+  const textBeforeCursor = document.getText(new vscode.Range(new vscode.Position(0, 0), position));
+  const functionRegex = /function\s+([a-zA-Z0-9_]+)\s*\(/g;
+  let match;
+  let lastFunctionName = null;
 
-  for (let i = position.line; i >= 0; i--) {
-    const line = lines[i].trim();
-    const functionNameMatch = /(?:function|def|fun|fn)\s+([a-zA-Z0-9_]+)/.exec(line);
-
-    if (functionNameMatch) {
-      return functionNameMatch[1];
-    }
+  while ((match = functionRegex.exec(textBeforeCursor)) !== null) {
+    lastFunctionName = match[1];
   }
 
-  return null;
+  return lastFunctionName;
 }
 
 function getFileExtension(fileName) {
-  return fileName.split(".").pop().toLowerCase();
+  return fileName.split('.').pop();
 }
 
-function moveCursorToTryBlock(editor, originalPosition) {
-  const newPosition = new vscode.Position(originalPosition.line + 1, originalPosition.character + 5);
-  editor.selection = new vscode.Selection(newPosition, newPosition);
+function moveCursorToTryBlock(editor, position) {
+  const newPosition = position.with(position.line, position.character + 5);
+  const newSelection = new vscode.Selection(newPosition, newPosition);
+  editor.selection = newSelection;
 }
 
 module.exports = {

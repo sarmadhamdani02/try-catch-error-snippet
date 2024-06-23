@@ -34,8 +34,13 @@ The inserted try-catch block follows this format:
 - **FunctionName()** dynamically represents the name of the function where the try-catch block is inserted, providing crucial context in the error message.
 - Error details are displayed in the console for quick reference.
 
-### Snippet Format
-[Watch this video](media/mediaFiles/ReadmeMedia/VSCodeExtension.mp4)
+### Example
+
+<video width="600" autoplay loop muted playsinline>
+  <source src="media/mediaFiles/ReadmeMedia/VSCodeExtension.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 
 
 ## Language Support
